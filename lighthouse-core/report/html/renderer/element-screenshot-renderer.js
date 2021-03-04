@@ -118,18 +118,15 @@ class ElementScreenshotRenderer {
   }
 
   /**
-   * Called externally and must be injected to the report in order to use this renderer.
-   * @param {DOM} dom
+   * Called by report renderer. Defines a css variable used by any element screenshots
+   * in the provided report element.
+   * Allows for multiple Lighthouse reports to be rendered on the page, each with their
+   * own full page screenshot.
+   * @param {HTMLElement} el
    * @param {LH.Artifacts.FullPageScreenshot['screenshot']} screenshot
    */
-  static createBackgroundImageStyle(dom, screenshot) {
-    const styleEl = dom.createElement('style');
-    styleEl.id = 'full-page-screenshot-style';
-    styleEl.textContent = `
-      .lh-element-screenshot__image {
-        background-image: url(${screenshot.data})
-      }`;
-    return styleEl;
+  static installFullPageScreenshot(el, screenshot) {
+    el.style.setProperty('--element-screenshot-url', `url(${screenshot.data})`);
   }
 
   /**
@@ -159,6 +156,7 @@ class ElementScreenshotRenderer {
       if (!el) return;
 
       const overlay = dom.createElement('div', 'lh-element-screenshot__overlay');
+      ElementScreenshotRenderer.installFullPageScreenshot(overlay, fullPageScreenshot.screenshot);
       rootEl.append(overlay);
 
       // The newly-added overlay has the dimensions we need.
