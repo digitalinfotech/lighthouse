@@ -5,25 +5,19 @@
  */
 'use strict';
 
-/**
- * @typedef Finding
- * @property {number} type
- * @property {string} description
- * @property {number} severity Severity value 0-100 where 0 is the most severe.
- * @property {string} directive The directive the finding applies to.
- * @property {string|undefined} value Keyword if the finding applies to one.
- */
+/** @typedef {import('csp_evaluator/finding').Finding} Finding */
 
-const log = require('lighthouse-logger');
-const i18n = require('../lib/i18n/i18n.js');
 const {
-  Parser,
-  Type,
-  Directive,
   evaluateForFailure,
   evaluateForSyntaxErrors,
   evaluateForWarnings,
-} = require('../../third-party/csp-evaluator/optimized_binary.js');
+} = require('csp_evaluator/dist/lighthouse/lighthouse_checks.js');
+const {Type} = require('csp_evaluator/dist/finding.js');
+const {CspParser} = require('csp_evaluator/dist/parser.js');
+const {Directive} = require('csp_evaluator/dist/csp.js');
+
+const log = require('lighthouse-logger');
+const i18n = require('../lib/i18n/i18n.js');
 
 const UIStrings = {
   /** Message shown when a CSP does not have a base-uri directive. Shown in a table with a list of other CSP vulnerabilities and suggestions. "CSP" stands for "Content Security Policy". "base-uri", "'none'", and "'self'" do not need to be translated. */
@@ -146,7 +140,7 @@ function getTranslatedDescription(finding) {
  * @return {Finding[]}
  */
 function evaluateRawCspForFailures(rawCsps) {
-  return evaluateForFailure(rawCsps.map(c => new Parser(c).csp));
+  return evaluateForFailure(rawCsps.map(c => new CspParser(c).csp));
 }
 
 /**
@@ -156,7 +150,7 @@ function evaluateRawCspForFailures(rawCsps) {
  * @return {Finding[]}
  */
 function evaluateRawCspForWarnings(rawCsps) {
-  return evaluateForWarnings(rawCsps.map(c => new Parser(c).csp));
+  return evaluateForWarnings(rawCsps.map(c => new CspParser(c).csp));
 }
 
 /**
@@ -164,7 +158,7 @@ function evaluateRawCspForWarnings(rawCsps) {
  * @return {Finding[][]} Entries are a list of findings corresponding to the CSP at the same index in `rawCsps`.
  */
 function evaluateRawCspForSyntax(rawCsps) {
-  return evaluateForSyntaxErrors(rawCsps.map(c => new Parser(c).csp));
+  return evaluateForSyntaxErrors(rawCsps.map(c => new CspParser(c).csp));
 }
 
 module.exports = {
