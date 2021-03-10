@@ -6,12 +6,34 @@
 'use strict';
 
 const {isIcuMessage} = require('../../lib/i18n/i18n.js');
+const {getTranslatedDescription, parseCsp} = require('../../lib/csp-evaluator.js');
+
 const {
-  evaluateRawCspForFailures,
-  getTranslatedDescription,
-  evaluateRawCspForWarnings,
-  evaluateRawCspForSyntax,
-} = require('../../lib/csp-evaluator.js');
+  evaluateForFailure,
+  evaluateForWarnings,
+  evaluateForSyntaxErrors,
+} = require('csp_evaluator/dist/lighthouse/lighthouse_checks.js');
+
+/**
+ * @param {string[]} rawCsps
+ */
+function evaluateRawCspForFailures(rawCsps) {
+  return evaluateForFailure(rawCsps.map(parseCsp));
+}
+
+/**
+ * @param {string[]} rawCsps
+ */
+function evaluateRawCspForWarnings(rawCsps) {
+  return evaluateForWarnings(rawCsps.map(parseCsp));
+}
+
+/**
+ * @param {string[]} rawCsps
+ */
+function evaluateRawCspForSyntax(rawCsps) {
+  return evaluateForSyntaxErrors(rawCsps.map(parseCsp));
+}
 
 /* eslint-env jest */
 

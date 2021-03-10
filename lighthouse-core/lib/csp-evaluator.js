@@ -134,37 +134,27 @@ function getTranslatedDescription(finding) {
 }
 
 /**
- * Evaluator looks at all CSPs together to find bypasses.
- * Multiple CSPs can form a strict policy even if they would be bypassable on their own.
- * @param {string[]} rawCsps
- * @return {Finding[]}
+ * @param {string} rawCsp
  */
-function evaluateRawCspForFailures(rawCsps) {
-  return evaluateForFailure(rawCsps.map(c => new CspParser(c).csp));
-}
-
-/**
- * Evaluator looks at all CSPs together to find warnings.
- * Multiple CSPs can form a policy without warnings even if they would have warnings on their own.
- * @param {string[]} rawCsps
- * @return {Finding[]}
- */
-function evaluateRawCspForWarnings(rawCsps) {
-  return evaluateForWarnings(rawCsps.map(c => new CspParser(c).csp));
+function parseCsp(rawCsp) {
+  return new CspParser(rawCsp).csp;
 }
 
 /**
  * @param {string[]} rawCsps
- * @return {Finding[][]} Entries are a list of findings corresponding to the CSP at the same index in `rawCsps`.
+ * @return {{bypasses: Finding[], warnings: Finding[], syntax: Finding[][]}}
  */
-function evaluateRawCspForSyntax(rawCsps) {
-  return evaluateForSyntaxErrors(rawCsps.map(c => new CspParser(c).csp));
+function evaluateRawCspsForXss(rawCsps) {
+  const parsedCsps = rawCsps.map(parseCsp);
+  const bypasses = evaluateForFailure(parsedCsps);
+  const warnings = evaluateForWarnings(parsedCsps);
+  const syntax = evaluateForSyntaxErrors(parsedCsps);
+  return {bypasses, warnings, syntax};
 }
 
 module.exports = {
-  evaluateRawCspForFailures,
-  evaluateRawCspForWarnings,
-  evaluateRawCspForSyntax,
   getTranslatedDescription,
+  evaluateRawCspsForXss,
+  parseCsp,
   UIStrings,
 };
