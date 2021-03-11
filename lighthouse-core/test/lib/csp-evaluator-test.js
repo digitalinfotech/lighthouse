@@ -72,10 +72,9 @@ describe('getTranslatedDescription', () => {
     expect(translated).toHaveLength(1);
     expect(isIcuMessage(translated[0])).toBeTruthy();
     expect(translated[0]).toBeDisplayString(
-      'Missing base-uri allows the injection of <base> tags. ' +
-      'They can be used to set the base URL for all relative (script) ' +
-      'URLs to an attacker controlled domain. ' +
-      'Can you set it to \'none\' or \'self\'?'
+      'Missing base-uri allows injected <base> tags to set the base URL for all ' +
+      'relative URLs (e.g. scripts) to an attacker controlled domain. ' +
+      'Consider setting base-uri to \'none\' or \'self\'.'
     );
   });
 
