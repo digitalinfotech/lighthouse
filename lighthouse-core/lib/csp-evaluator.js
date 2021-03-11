@@ -21,10 +21,9 @@ const i18n = require('../lib/i18n/i18n.js');
 
 const UIStrings = {
   /** Message shown when a CSP does not have a base-uri directive. Shown in a table with a list of other CSP vulnerabilities and suggestions. "CSP" stands for "Content Security Policy". "base-uri", "'none'", and "'self'" do not need to be translated. */
-  missingBaseUri: 'Missing base-uri allows the injection of <base> tags. ' +
-    'They can be used to set the base URL for all relative (script) ' +
-    'URLs to an attacker controlled domain. ' +
-    'Can you set it to \'none\' or \'self\'?',
+  missingBaseUri: 'Missing base-uri allows injected <base> tags to set the base URL for all ' +
+    'relative URLs (e.g. scripts) to an attacker controlled domain. ' +
+    'Consider setting base-uri to \'none\' or \'self\'.',
   /** Message shown when a CSP does not have a script-src directive. Shown in a table with a list of other CSP vulnerabilities and suggestions. "CSP" stands for "Content Security Policy". "script-src" does not need to be translated. */
   missingScriptSrc: 'script-src directive is missing. ' +
     'This can allow the execution of unsafe scripts.',
