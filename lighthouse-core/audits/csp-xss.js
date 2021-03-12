@@ -29,9 +29,36 @@ const UIStrings = {
     'Consider defining the CSP in an HTTP header if you can.',
   /** Label for a column in a data table; entries will be a directive of a CSP. "CSP" stands for "Content Security Policy". */
   columnDirective: 'Directive',
+  /** Tooltip for an icon that is displayed for a table message describing a CSP bypass. "CSP" stands for "Content Security Policy". "Vulnerability" is an adequate alternative to "Bypass". */
+  tooltipBypass: 'Bypass',
+  /** Tooltip for an icon that is displayed for a table message describing a CSP warning. "CSP" stands for "Content Security Policy". */
+  tooltipWarning: 'Warning',
+  /** Tooltip for an icon that is displayed for a table message describing a CSP syntax error. "CSP" stands for "Content Security Policy". */
+  tooltipSyntax: 'Syntax',
 };
 
 const str_ = i18n.createMessageInstanceIdFn(__filename, UIStrings);
+
+/** @type {LH.Audit.Details.IconValue} */
+const BYPASS_ICON = {
+  type: 'icon',
+  iconName: 'fail',
+  tooltip: str_(UIStrings.tooltipBypass),
+};
+
+/** @type {LH.Audit.Details.IconValue} */
+const WARNING_ICON = {
+  type: 'icon',
+  iconName: 'average',
+  tooltip: str_(UIStrings.tooltipWarning),
+};
+
+/** @type {LH.Audit.Details.IconValue} */
+const SYNTAX_ICON = {
+  type: 'icon',
+  iconName: 'syntax',
+  tooltip: str_(UIStrings.tooltipSyntax),
+};
 
 class CspXss extends Audit {
   /**
@@ -74,17 +101,19 @@ class CspXss extends Audit {
 
   /**
    * @param {Finding} finding
+   * @param {LH.Audit.Details.IconValue=} icon
    * @return {LH.Audit.Details.TableItem}
    */
-  static findingToTableItem(finding) {
+  static findingToTableItem(finding, icon) {
     return {
       directive: finding.directive,
       description: getTranslatedDescription(finding),
+      severity: icon,
     };
   }
 
   /**
-   * @param {import('../lib/csp-evaluator').Finding[][]} syntaxFindings
+   * @param {Finding[][]} syntaxFindings
    * @param {string[]} rawCsps
    * @return {LH.Audit.Details.TableItem[]}
    */
@@ -93,9 +122,10 @@ class CspXss extends Audit {
     const results = [];
 
     for (let i = 0; i < syntaxFindings.length; ++i) {
-      const items = syntaxFindings[i].map(this.findingToTableItem);
+      const items = syntaxFindings[i].map(f => this.findingToTableItem(f));
       if (!items.length) continue;
       results.push({
+        severity: SYNTAX_ICON,
         description: {
           type: 'code',
           value: rawCsps[i],
@@ -111,45 +141,64 @@ class CspXss extends Audit {
   }
 
   /**
+   * @param {string[]} cspHeaders
+   * @param {string[]} cspMetaTags
+   * @return {{score: number, results: LH.Audit.Details.TableItem[]}}
+   */
+  static constructResults(cspHeaders, cspMetaTags) {
+    const rawCsps = [...cspHeaders, ...cspMetaTags];
+    if (!rawCsps.length) {
+      return {
+        score: 0,
+        results: [{
+          severity: BYPASS_ICON,
+          description: str_(UIStrings.noCsp),
+          directive: undefined,
+        }],
+      };
+    }
+
+    const {bypasses, warnings, syntax} = evaluateRawCspsForXss(rawCsps);
+
+    const results = [
+      ...this.constructSyntaxResults(syntax, rawCsps),
+      ...bypasses.map(f => this.findingToTableItem(f, BYPASS_ICON)),
+      ...warnings.map(f => this.findingToTableItem(f, WARNING_ICON)),
+    ];
+
+    // Add extra warning for a CSP defined in a meta tag.
+    if (cspMetaTags.length) {
+      results.push({
+        severity: WARNING_ICON,
+        description: str_(UIStrings.metaTagMessage),
+        directive: undefined,
+      });
+    }
+
+    return {score: bypasses.length ? 0 : 1, results};
+  }
+
+  /**
    * @param {LH.Artifacts} artifacts
    * @param {LH.Audit.Context} context
    * @return {Promise<LH.Audit.Product>}
    */
   static async audit(artifacts, context) {
     const {cspHeaders, cspMetaTags} = await this.getRawCsps(artifacts, context);
-    const rawCsps = [...cspHeaders, ...cspMetaTags];
-    if (!rawCsps.length) {
-      return {
-        score: 0,
-        notApplicable: false,
-        displayValue: str_(UIStrings.noCsp),
-      };
-    }
-
-    // TODO: Add severity icons for bypasses and warnings.
-    const {bypasses, warnings, syntax} = evaluateRawCspsForXss(rawCsps);
-
-    const results = [
-      ...this.constructSyntaxResults(syntax, rawCsps),
-      ...bypasses.map(this.findingToTableItem),
-      ...warnings.map(this.findingToTableItem),
-    ];
-
-    // Add extra warning for a CSP defined in a meta tag.
-    if (cspMetaTags.length) {
-      results.push({description: str_(UIStrings.metaTagMessage), directive: undefined});
-    }
+    const {score, results} = this.constructResults(cspHeaders, cspMetaTags);
 
     /** @type {LH.Audit.Details.Table['headings']} */
     const headings = [
       /* eslint-disable max-len */
+      {key: 'severity', itemType: 'icon', subItemsHeading: {key: 'severity'}, text: ''},
       {key: 'description', itemType: 'text', subItemsHeading: {key: 'description'}, text: str_(i18n.UIStrings.columnDescription)},
       {key: 'directive', itemType: 'code', subItemsHeading: {key: 'directive'}, text: str_(UIStrings.columnDirective)},
       /* eslint-enable max-len */
     ];
     const details = Audit.makeTableDetails(headings, results);
+
     return {
-      score: bypasses.length ? 0 : 1,
+      score,
       notApplicable: false,
       details,
     };
