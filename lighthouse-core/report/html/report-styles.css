@@ -1399,7 +1399,7 @@
 
 .lh-details-icon--syntax::after {
   content: '✕';
-  font-weight: bolder;
+  font-weight: bold;
   color: var(--color-fail);
 }
 
