@@ -596,6 +596,15 @@
   "lighthouse-core/audits/csp-xss.js | title": {
     "message": "Ensure CSP is effective against XSS attacks"
   },
+  "lighthouse-core/audits/csp-xss.js | tooltipBypass": {
+    "message": "Bypass"
+  },
+  "lighthouse-core/audits/csp-xss.js | tooltipSyntax": {
+    "message": "Syntax"
+  },
+  "lighthouse-core/audits/csp-xss.js | tooltipWarning": {
+    "message": "Warning"
+  },
   "lighthouse-core/audits/deprecations.js | columnDeprecate": {
     "message": "Deprecation / Warning"
   },

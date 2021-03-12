@@ -596,6 +596,15 @@
   "lighthouse-core/audits/csp-xss.js | title": {
     "message": "Êńŝúr̂é ĈŚP̂ íŝ éf̂f́êćt̂ív̂é âǵâín̂śt̂ X́ŜŚ ât́t̂áĉḱŝ"
   },
+  "lighthouse-core/audits/csp-xss.js | tooltipBypass": {
+    "message": "B̂ýp̂áŝś"
+  },
+  "lighthouse-core/audits/csp-xss.js | tooltipSyntax": {
+    "message": "Ŝýn̂t́âx́"
+  },
+  "lighthouse-core/audits/csp-xss.js | tooltipWarning": {
+    "message": "Ŵár̂ńîńĝ"
+  },
   "lighthouse-core/audits/deprecations.js | columnDeprecate": {
     "message": "D̂ép̂ŕêćât́îón̂ / Ẃâŕn̂ín̂ǵ"
   },
