@@ -1379,30 +1379,6 @@
   width: 12%;
 }
 
-.lh-details-icon--fail {
-  display: flex;
-  margin: auto;
-  height: 0px;
-  width: 0px;
-  border-left: calc(var(--score-icon-size) / 2) solid transparent;
-  border-right: calc(var(--score-icon-size) / 2) solid transparent;
-  border-bottom: var(--score-icon-size) solid var(--color-fail);
-}
-
-.lh-details-icon--average {
-  display: flex;
-  margin: auto;
-  height: var(--score-icon-size);
-  width: var(--score-icon-size);
-  background-color: var(--color-average);
-}
-
-.lh-details-icon--syntax::after {
-  content: '✕';
-  font-weight: bold;
-  color: var(--color-fail);
-}
-
 .lh-text__url-host {
   display: inline;
 }

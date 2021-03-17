@@ -170,17 +170,6 @@ class DetailsRenderer {
   }
 
   /**
-   * @param {{iconName: string, tooltip?: string}} value
-   * @return {HTMLElement}
-   */
-  _renderIcon(value) {
-    const icon = this._dom.createElement('span');
-    icon.classList.add(`lh-details-icon--${value.iconName}`);
-    if (value.tooltip) icon.title = value.tooltip;
-    return icon;
-  }
-
-  /**
    * @param {string} text
    * @return {HTMLDivElement}
    */
@@ -265,9 +254,6 @@ class DetailsRenderer {
         }
         case 'url': {
           return this.renderTextURL(value.value);
-        }
-        case 'icon': {
-          return this._renderIcon(value);
         }
         default: {
           return this._renderUnknown(value.type, value);

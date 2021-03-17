@@ -246,6 +246,9 @@ declare global {
         value: string;
       }
 
+      /**
+       * A value used within a details object, intended to display a visual icon.
+       */
       export interface IconValue {
         type: 'icon';
         iconName: string;

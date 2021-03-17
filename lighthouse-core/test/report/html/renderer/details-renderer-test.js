@@ -659,37 +659,6 @@ describe('DetailsRenderer', () => {
       assert.strictEqual(codeItemEl.innerHTML, '<pre class="lh-code">invalid-url://example.com/</pre>');
     });
 
-    it('renders icons', () => {
-      const details = {
-        type: 'table',
-        headings: [{key: 'symbol', itemType: 'icon', text: 'Symbol'}],
-        items: [
-          {symbol: {type: 'icon', iconName: 'warning'}},
-        ],
-      };
-      const el = renderer.render(details);
-      const iconEl = el.querySelector('td.lh-table-column--icon');
-      expect(iconEl.outerHTML).toEqual(
-        '<td class="lh-table-column--icon"><span class="lh-details-icon--warning"></span></td>'
-      );
-    });
-
-    it('renders icons with tooltip', () => {
-      const details = {
-        type: 'table',
-        headings: [{key: 'symbol', itemType: 'icon', text: 'Symbol'}],
-        items: [
-          {symbol: {type: 'icon', iconName: 'warning', tooltip: 'hello'}},
-        ],
-      };
-      const el = renderer.render(details);
-      const iconEl = el.querySelector('td.lh-table-column--icon');
-      expect(iconEl.outerHTML).toEqual(
-        '<td class="lh-table-column--icon">' +
-        '<span class="lh-details-icon--warning" title="hello"></span></td>'
-      );
-    });
-
     it('renders an unknown heading itemType', () => {
       // Disallowed by type system, but test that we get an error message out just in case.
       const details = {
