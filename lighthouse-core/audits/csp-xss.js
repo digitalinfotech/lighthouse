@@ -29,36 +29,9 @@ const UIStrings = {
     'Consider defining the CSP in an HTTP header if you can.',
   /** Label for a column in a data table; entries will be a directive of a CSP. "CSP" stands for "Content Security Policy". */
   columnDirective: 'Directive',
-  /** Tooltip for an icon that is displayed for a table message describing a CSP bypass. "CSP" stands for "Content Security Policy". "Vulnerability" is an adequate alternative to "Bypass". */
-  tooltipBypass: 'Bypass',
-  /** Tooltip for an icon that is displayed for a table message describing a CSP warning. "CSP" stands for "Content Security Policy". */
-  tooltipWarning: 'Warning',
-  /** Tooltip for an icon that is displayed for a table message describing a CSP syntax error. "CSP" stands for "Content Security Policy". */
-  tooltipSyntax: 'Syntax',
 };
 
 const str_ = i18n.createMessageInstanceIdFn(__filename, UIStrings);
-
-/** @type {LH.Audit.Details.IconValue} */
-const BYPASS_ICON = {
-  type: 'icon',
-  iconName: 'fail',
-  tooltip: str_(UIStrings.tooltipBypass),
-};
-
-/** @type {LH.Audit.Details.IconValue} */
-const WARNING_ICON = {
-  type: 'icon',
-  iconName: 'average',
-  tooltip: str_(UIStrings.tooltipWarning),
-};
-
-/** @type {LH.Audit.Details.IconValue} */
-const SYNTAX_ICON = {
-  type: 'icon',
-  iconName: 'syntax',
-  tooltip: str_(UIStrings.tooltipSyntax),
-};
 
 class CspXss extends Audit {
   /**
@@ -101,7 +74,7 @@ class CspXss extends Audit {
 
   /**
    * @param {Finding} finding
-   * @param {LH.Audit.Details.IconValue=} icon
+   * @param {string=} icon
    * @return {LH.Audit.Details.TableItem}
    */
   static findingToTableItem(finding, icon) {
@@ -125,7 +98,7 @@ class CspXss extends Audit {
       const items = syntaxFindings[i].map(f => this.findingToTableItem(f));
       if (!items.length) continue;
       results.push({
-        severity: SYNTAX_ICON,
+        severity: 'Syntax',
         description: {
           type: 'code',
           value: rawCsps[i],
@@ -151,7 +124,7 @@ class CspXss extends Audit {
       return {
         score: 0,
         results: [{
-          severity: BYPASS_ICON,
+          severity: 'Bypass',
           description: str_(UIStrings.noCsp),
           directive: undefined,
         }],
@@ -162,14 +135,14 @@ class CspXss extends Audit {
 
     const results = [
       ...this.constructSyntaxResults(syntax, rawCsps),
-      ...bypasses.map(f => this.findingToTableItem(f, BYPASS_ICON)),
-      ...warnings.map(f => this.findingToTableItem(f, WARNING_ICON)),
+      ...bypasses.map(f => this.findingToTableItem(f, 'Bypass')),
+      ...warnings.map(f => this.findingToTableItem(f, 'Warning')),
     ];
 
     // Add extra warning for a CSP defined in a meta tag.
     if (cspMetaTags.length) {
       results.push({
-        severity: WARNING_ICON,
+        severity: 'Warning',
         description: str_(UIStrings.metaTagMessage),
         directive: undefined,
       });

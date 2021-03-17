@@ -11,22 +11,11 @@ const networkRecordsToDevtoolsLog = require('../network-records-to-devtools-log.
 
 /* eslint-env jest */
 
+/** Using tooltips while severity icons are just for testing. */
 const ICONS = {
-  bypass: {
-    type: 'icon',
-    iconName: 'fail',
-    tooltip: {formattedDefault: 'Bypass'},
-  },
-  warning: {
-    type: 'icon',
-    iconName: 'average',
-    tooltip: {formattedDefault: 'Warning'},
-  },
-  syntax: {
-    type: 'icon',
-    iconName: 'syntax',
-    tooltip: {formattedDefault: 'Syntax'},
-  },
+  bypass: 'Bypass',
+  warning: 'Warning',
+  syntax: 'Syntax',
 };
 
 const STATIC_RESULTS = {
@@ -303,11 +292,7 @@ describe('constructResults', () => {
     expect(score).toEqual(0);
     expect(results).toMatchObject([
       {
-        severity: {
-          type: 'icon',
-          iconName: 'fail',
-          tooltip: {formattedDefault: 'Bypass'},
-        },
+        severity: ICONS.bypass,
         description: {
           formattedDefault: 'No CSP found in enforcement mode',
         },

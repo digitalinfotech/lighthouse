@@ -98,10 +98,10 @@ declare global {
       }
 
       /** String enum of possible types of values found within table items. */
-      type ItemValueType = 'bytes' | 'code' | 'link' | 'ms' | 'multi' | 'node' | 'source-location' | 'numeric' | 'text' | 'thumbnail' | 'timespanMs' | 'url' | 'icon';
+      type ItemValueType = 'bytes' | 'code' | 'link' | 'ms' | 'multi' | 'node' | 'source-location' | 'numeric' | 'text' | 'thumbnail' | 'timespanMs' | 'url';
 
       /** Possible types of values found within table items. */
-      type ItemValue = string | number | boolean | DebugData | NodeValue | SourceLocationValue | LinkValue | UrlValue | CodeValue | NumericValue | IconValue | IcuMessage | TableSubItems;
+      type ItemValue = string | number | boolean | DebugData | NodeValue | SourceLocationValue | LinkValue | UrlValue | CodeValue | NumericValue | IcuMessage | TableSubItems;
 
       // TODO: drop TableColumnHeading, rename OpportunityColumnHeading to TableColumnHeading and
       // use that for all table-like audit details.
@@ -244,15 +244,6 @@ declare global {
       export interface UrlValue {
         type: 'url';
         value: string;
-      }
-
-      /**
-       * A value used within a details object, intended to display a visual icon.
-       */
-      export interface IconValue {
-        type: 'icon';
-        iconName: string;
-        tooltip?: IcuMessage | string;
       }
 
       /**
