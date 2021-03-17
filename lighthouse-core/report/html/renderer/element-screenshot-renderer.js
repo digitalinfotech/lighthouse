@@ -18,6 +18,14 @@
 /** @typedef {{width: number, height: number}} Size */
 
 /**
+ * @typedef InstallOverlayFeatureParams
+ * @property {DOM} dom
+ * @property {Element} el
+ * @property {ParentNode} templateContext
+ * @property {LH.Artifacts.FullPageScreenshot} fullPageScreenshot
+ */
+
+/**
  * @param {LH.Artifacts.FullPageScreenshot['screenshot']} screenshot
  * @param {LH.Artifacts.Rect} rect
  * @return {boolean}
@@ -131,24 +139,16 @@ class ElementScreenshotRenderer {
 
   /**
    * Installs the lightbox elements and wires up click listeners to all .lh-element-screenshot elements.
-   * @param {DOM} dom
-   * @param {ParentNode} templateContext
-   * @param {LH.Artifacts.FullPageScreenshot} fullPageScreenshot
+   * @param {InstallOverlayFeatureParams} _
    */
-  static installOverlayFeature(dom, templateContext, fullPageScreenshot) {
-    const rootEl = dom.find('.lh-root', dom.document());
-    if (!rootEl) {
-      console.warn('No lh-root. Overlay install failed.'); // eslint-disable-line no-console
-      return;
-    }
-
+  static installOverlayFeature({dom, el, templateContext, fullPageScreenshot}) {
     const screenshotOverlayClass = 'lh-screenshot-overlay--enabled';
     // Don't install the feature more than once.
-    if (rootEl.classList.contains(screenshotOverlayClass)) return;
-    rootEl.classList.add(screenshotOverlayClass);
+    if (el.classList.contains(screenshotOverlayClass)) return;
+    el.classList.add(screenshotOverlayClass);
 
     // Add a single listener to the root element to handle all clicks within (event delegation).
-    rootEl.addEventListener('click', e => {
+    el.addEventListener('click', e => {
       const target = /** @type {?HTMLElement} */ (e.target);
       if (!target) return;
       // Only activate the overlay for clicks on the screenshot *preview* of an element, not the full-size too.
@@ -156,8 +156,7 @@ class ElementScreenshotRenderer {
       if (!el) return;
 
       const overlay = dom.createElement('div', 'lh-element-screenshot__overlay');
-      ElementScreenshotRenderer.installFullPageScreenshot(overlay, fullPageScreenshot.screenshot);
-      rootEl.append(overlay);
+      el.append(overlay);
 
       // The newly-added overlay has the dimensions we need.
       const maxLightboxSize = {
