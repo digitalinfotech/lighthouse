@@ -147,7 +147,7 @@ class ElementScreenshotRenderer {
     if (el.classList.contains(screenshotOverlayClass)) return;
     el.classList.add(screenshotOverlayClass);
 
-    // Add a single listener to the root element to handle all clicks within (event delegation).
+    // Add a single listener to the provided element to handle all clicks within (event delegation).
     el.addEventListener('click', e => {
       const target = /** @type {?HTMLElement} */ (e.target);
       if (!target) return;
